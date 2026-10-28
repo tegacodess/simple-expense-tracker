@@ -82,6 +82,8 @@ In the starter project this test **is expected to fail**. You will use it in the
 
 - **Dashboard**: total allocated budget, total expenses, remaining balance, and a breakdown of spending by category.
 - **Category budgets**: six categories, each with an allocated budget, the amount spent, and the remaining balance. Click **Edit** to change a category's budget. The remaining balance can go negative when you overspend.
+- **Budget alerts**: category progress bars highlight budgets that are close to the 80% warning threshold or already over budget.
+- **Move budget money**: reallocate unspent budget from one category to another while keeping the total allocation unchanged.
 - **Add expenses**: enter a description, amount, category, and date. The form checks that every field is valid.
 - **View expenses**: all expenses are listed newest first. Use the **Sort** menu to show oldest first, or to group them by category.
 - **Delete expenses**: click **Delete** on any expense and confirm.

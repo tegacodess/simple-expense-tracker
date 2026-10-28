@@ -156,6 +156,55 @@ main.container {
   margin: 0;
 }
 
+.card__supporting-text {
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+}
+
+/* ---------- Budget alerts & transfers ---------- */
+
+.budget-alerts {
+  display: grid;
+  gap: 8px;
+  margin: -2px 0 14px;
+}
+
+.budget-alert {
+  margin: 0;
+  padding: 11px 14px;
+  border-left: 4px solid var(--color-amber);
+  border-radius: var(--radius-small);
+  background: var(--color-amber-soft);
+  color: #854d0e;
+  font-size: 0.9rem;
+}
+
+.budget-alert--over {
+  border-left-color: var(--color-danger);
+  background: var(--color-danger-soft);
+  color: #991b1b;
+}
+
+.budget-transfer {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.8fr) 1.8fr;
+  align-items: end;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.transfer-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr auto;
+  align-items: end;
+  gap: 10px;
+}
+
+.transfer-form__error {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
 /* ---------- Summary cards ---------- */
 
 .summary-grid {
@@ -370,6 +419,49 @@ main.container {
   text-align: right;
 }
 
+.budget-progress {
+  min-width: 150px;
+}
+
+.budget-progress__track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7eaf1;
+}
+
+.budget-progress__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-teal);
+}
+
+.budget-progress__track--near .budget-progress__fill {
+  background: var(--color-amber);
+}
+
+.budget-progress__track--over .budget-progress__fill {
+  background: var(--color-danger);
+}
+
+.budget-status {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+  white-space: nowrap;
+}
+
+.budget-status--near {
+  color: var(--color-amber);
+}
+
+.budget-status--over {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
 /* ---------- Forms ---------- */
 
 .expenses-layout {
@@ -549,6 +641,10 @@ select[aria-invalid='true'] {
   .expenses-layout {
     grid-template-columns: 1fr;
   }
+
+  .budget-transfer {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
@@ -617,5 +713,17 @@ select[aria-invalid='true'] {
 
   .card__toolbar {
     padding: 14px 16px;
+  }
+
+  .transfer-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .transfer-form .btn {
+    width: 100%;
+  }
+
+  .budget-progress {
+    min-width: 0;
   }
 }

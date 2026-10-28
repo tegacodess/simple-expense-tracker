@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  BUDGET_ALERT_THRESHOLD,
+  BUDGET_WARNING_THRESHOLD,
+  calculateBudgetPercentageUsed,
   calculateCategoryRemaining,
   calculateCategorySpent,
   calculateTotalBudget,
+  getBudgetStatus,
   getCategorySummaries,
   roundToCents,
   sortExpensesByCategory,
@@ -33,6 +37,40 @@ describe('calculateTotalBudget', () => {
 
   it('returns 0 when there are no categories', () => {
     expect(calculateTotalBudget([])).toBe(0);
+  });
+});
+
+describe('calculateBudgetPercentageUsed', () => {
+  it('calculates the percentage used for a positive budget', () => {
+    expect(calculateBudgetPercentageUsed(40, 100)).toBe(40);
+    expect(calculateBudgetPercentageUsed(85.5, 100)).toBe(85.5);
+  });
+
+  it('handles zero budgets safely', () => {
+    expect(calculateBudgetPercentageUsed(0, 0)).toBe(0);
+    expect(calculateBudgetPercentageUsed(25, 0)).toBe(100);
+  });
+});
+
+describe('getBudgetStatus', () => {
+  it('returns normal below warning threshold', () => {
+    expect(getBudgetStatus(79.99, 100)).toBe('normal');
+  });
+
+  it('returns warning at 80% and below 100%', () => {
+    expect(BUDGET_WARNING_THRESHOLD).toBe(80);
+    expect(getBudgetStatus(80, 100)).toBe('warning');
+    expect(getBudgetStatus(99.99, 100)).toBe('warning');
+  });
+
+  it('returns alert at or above 100%', () => {
+    expect(BUDGET_ALERT_THRESHOLD).toBe(100);
+    expect(getBudgetStatus(100, 100)).toBe('alert');
+    expect(getBudgetStatus(120, 100)).toBe('alert');
+  });
+
+  it('returns alert for zero budget with positive spending', () => {
+    expect(getBudgetStatus(10, 0)).toBe('alert');
   });
 });
 

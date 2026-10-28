@@ -168,6 +168,62 @@ describe('App', () => {
   });
 
   describe('category budgets', () => {
+    it('shows budget alerts and progress bars', () => {
+      render(<App />);
+
+      expect(screen.getByText(/Over budget: Shopping/)).toBeInTheDocument();
+      expect(screen.getByText(/Close to budget: Food & Dining/)).toBeInTheDocument();
+      expect(screen.getAllByRole('progressbar')).toHaveLength(6);
+      expect(screen.getByRole('progressbar', { name: 'Shopping budget usage' })).toHaveAttribute(
+        'aria-valuenow',
+        '100'
+      );
+    });
+
+    it('uses accessible progress labels and threshold-based values', () => {
+      render(<App />);
+
+      expect(screen.getByRole('progressbar', { name: 'Food & Dining budget usage' })).toHaveAttribute(
+        'aria-valuenow',
+        '85'
+      );
+      expect(screen.getByRole('progressbar', { name: 'Transportation budget usage' })).toHaveAttribute(
+        'aria-valuenow',
+        '44'
+      );
+      expect(
+        screen.getByRole('progressbar', { name: 'Health & Wellness budget usage' })
+      ).toHaveAttribute('aria-valuenow', '77');
+    });
+
+    it('moves budget between categories and keeps the total unchanged', async () => {
+      const user = userEvent.setup();
+      render(<App />);
+
+      await user.selectOptions(screen.getByLabelText('From'), 'food');
+      await user.selectOptions(screen.getByLabelText('To'), 'transportation');
+      await user.type(screen.getByLabelText('Transfer amount (₦)'), '10000');
+      await user.click(screen.getByRole('button', { name: 'Move money' }));
+
+      expect(within(getCategoryRow('Food & Dining')).getByText('₦90,000.00')).toBeInTheDocument();
+      expect(within(getCategoryRow('Transportation')).getByText('₦60,000.00')).toBeInTheDocument();
+      expect(screen.getByText('₦270,000.00')).toBeInTheDocument();
+      expect(readStorage(STORAGE_KEYS.categories).find((c) => c.id === 'food').budget).toBe(90000);
+    });
+
+    it('rejects transfers larger than the source balance', async () => {
+      const user = userEvent.setup();
+      render(<App />);
+
+      await user.selectOptions(screen.getByLabelText('From'), 'shopping');
+      await user.selectOptions(screen.getByLabelText('To'), 'food');
+      await user.type(screen.getByLabelText('Transfer amount (₦)'), '1');
+      await user.click(screen.getByRole('button', { name: 'Move money' }));
+
+      expect(screen.getByRole('alert')).toHaveTextContent('Only ₦0.00 is available to move.');
+      expect(readStorage(STORAGE_KEYS.categories).find((c) => c.id === 'food').budget).toBe(100000);
+    });
+
     it('updates a category budget and saves it', async () => {
       const user = userEvent.setup();
       render(<App />);

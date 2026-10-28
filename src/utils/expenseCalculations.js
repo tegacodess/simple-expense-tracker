@@ -3,9 +3,37 @@
  * Components should use these instead of calculating totals inline.
  */
 
+export const BUDGET_WARNING_THRESHOLD = 80;
+export const BUDGET_ALERT_THRESHOLD = 100;
+
 /** Rounds a number to 2 decimal places to avoid floating point noise. */
 export function roundToCents(value) {
   return Math.round(value * 100) / 100;
+}
+
+/** Percentage of budget used, handling zero budgets safely. */
+export function calculateBudgetPercentageUsed(spent, budget) {
+  const numericSpent = Number(spent);
+  const numericBudget = Number(budget);
+
+  if (numericBudget <= 0) {
+    return numericSpent > 0 ? 100 : 0;
+  }
+
+  return (numericSpent / numericBudget) * 100;
+}
+
+/** Budget status derived from usage percentage thresholds. */
+export function getBudgetStatus(spent, budget) {
+  const percentageUsed = calculateBudgetPercentageUsed(spent, budget);
+
+  if (percentageUsed >= BUDGET_ALERT_THRESHOLD) {
+    return 'alert';
+  }
+  if (percentageUsed >= BUDGET_WARNING_THRESHOLD) {
+    return 'warning';
+  }
+  return 'normal';
 }
 
 /** Sum of all category budgets. */
@@ -15,16 +43,9 @@ export function calculateTotalBudget(categories) {
 
 /** Sum of all recorded expenses. Each expense is only counted once. */
 export function calculateTotalExpenses(expenses) {
-  const uniqueExpenses = new Map();
-  for (const expense of expenses) {
-    uniqueExpenses.set(expense.date, expense);
-  }
-
-  let total = 0;
-  for (const expense of uniqueExpenses.values()) {
-    total += Number(expense.amount);
-  }
-  return roundToCents(total);
+  return roundToCents(
+    expenses.reduce((total, expense) => total + Number(expense.amount), 0)
+  );
 }
 
 /** Total budget minus total expenses. May be negative. */
