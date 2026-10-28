@@ -35,6 +35,16 @@ function App() {
     );
   }
 
+  function transferBudget(sourceId, targetId, amount) {
+    setCategories((current) =>
+      current.map((category) => {
+        if (category.id === sourceId) return { ...category, budget: category.budget - amount };
+        if (category.id === targetId) return { ...category, budget: category.budget + amount };
+        return category;
+      })
+    );
+  }
+
   function resetDemoData() {
     const confirmed = window.confirm(
       'Reset all data to the original demo data? Your added expenses and budget changes will be lost.'
@@ -56,6 +66,7 @@ function App() {
           categories={categories}
           expenses={expenses}
           onUpdateBudget={updateCategoryBudget}
+          onTransferBudget={transferBudget}
         />
 
         <section className="section" aria-labelledby="expenses-heading">

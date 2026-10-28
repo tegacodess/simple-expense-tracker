@@ -15,16 +15,9 @@ export function calculateTotalBudget(categories) {
 
 /** Sum of all recorded expenses. Each expense is only counted once. */
 export function calculateTotalExpenses(expenses) {
-  const uniqueExpenses = new Map();
-  for (const expense of expenses) {
-    uniqueExpenses.set(expense.date, expense);
-  }
-
-  let total = 0;
-  for (const expense of uniqueExpenses.values()) {
-    total += Number(expense.amount);
-  }
-  return roundToCents(total);
+  return roundToCents(
+    expenses.reduce((total, expense) => total + Number(expense.amount), 0)
+  );
 }
 
 /** Total budget minus total expenses. May be negative. */
@@ -44,6 +37,15 @@ export function calculateCategorySpent(expenses, categoryId) {
 /** Category budget minus what has been spent in it. May be negative. */
 export function calculateCategoryRemaining(category, expenses) {
   return roundToCents(Number(category.budget) - calculateCategorySpent(expenses, category.id));
+}
+
+/** Returns the alert state for a category budget. */
+export function getBudgetStatus(spent, budget) {
+  const numericSpent = Number(spent);
+  const numericBudget = Number(budget);
+  if (numericSpent > numericBudget) return 'over';
+  if (numericBudget > 0 && numericSpent / numericBudget >= 0.8) return 'near';
+  return 'on-track';
 }
 
 /**
